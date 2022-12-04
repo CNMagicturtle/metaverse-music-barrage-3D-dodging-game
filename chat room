@@ -1,0 +1,70 @@
+const scoreboard = document.getElementById('scoreboard');
+const messages = document.getElementById('messages');
+const input = document.getElementById('input');
+const button = document.getElementById('button');
+
+let score = 0;
+
+const updateScore = () => {
+  scoreboard.innerHTML = `
+    <h2>Score</h2>
+    <ul>
+      <li>Score: ${score}</li>
+    </ul>
+  `;
+};
+
+const addMessage = (message) => {
+  messages.innerHTML += `<li>${message}</li>`;
+};
+
+button.addEventListener('click', () => {
+  if (input.value) {
+    addMessage(input.value);
+    input.value = '';
+  }
+});
+
+input.addEventListener('keydown', (event) => {
+  if (event.keyCode === 13 && input.value) {
+    addMessage(input.value);
+    input.value = '';
+  }
+});
+
+const gameLoop = () => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (gameOver) {
+    ctx.font = '48px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2);
+  } else {
+    if (Math.random() < 0.05) {
+      addBarrage();
+    }
+
+    barrages.forEach((barrage) => {
+      moveBarrage(barrage);
+      drawBarrage(barrage);
+
+      if (checkCollision(barrage)) {
+        gameOver = true;
+      }
+    });
+
+    barrages = barrages.filter((barrage) => barrage.x + barrage.width > 0);
+
+    if (gameStarted) {
+      movePlayer();
+      drawPlayer();
+
+      score += 1;
+      updateScore();
+    }
+  }
+
+  requestAnimationFrame(gameLoop);
+};
+
+gameLoop();
