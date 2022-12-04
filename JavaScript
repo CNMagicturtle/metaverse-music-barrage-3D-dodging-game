@@ -1,0 +1,85 @@
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+let gameStarted = false;
+let gameOver = false;
+
+let player = {
+  x: canvas.width / 2,
+  y: canvas.height - 30,
+  width: 30,
+  height: 30,
+  speed: 10,
+  direction: 0,
+};
+
+let barrages = [];
+
+const addBarrage = () => {
+  const randomY = Math.random() * canvas.height;
+  const randomSize = Math.random() * 20 + 10;
+  const randomSpeed = Math.random() * 5 + 5;
+
+  barrages.push({
+    x: canvas.width,
+    y: randomY,
+    width: randomSize,
+    height: randomSize,
+    speed: randomSpeed,
+  });
+};
+
+const drawBarrage = (barrage) => {
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(barrage.x, barrage.y, barrage.width, barrage.height);
+};
+
+const moveBarrage = (barrage) => {
+  barrage.x -= barrage.speed;
+};
+
+const drawPlayer = () => {
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(player.x, player.y, player.width, player.height);
+};
+
+const movePlayer = () => {
+  player.x += player.speed * player.direction;
+
+  if (player.x < 0) {
+    player.x = 0;
+  }
+
+  if (player.x + player.width > canvas.width) {
+    player.x = canvas.width - player.width;
+  }
+};
+
+const checkCollision = (barrage) => {
+  return player.x < barrage.x + barrage.width &&
+         player.x + player.width > barrage.x &&
+         player.y < barrage.y + barrage.height &&
+         player.y + player.height > barrage.y;
+};
+
+const gameLoop = () => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (gameOver) {
+    ctx.font = '48px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2);
+  } else {
+    if (Math.random() < 0.05) {
+      addBarrage();
+    }
+
+    barrages.forEach((barrage) => {
+      moveBarrage(barrage);
+      drawBarrage(barrage);
+    });
+
+    barrages = barrages.filter((barrage) => barrage.x + barrage.width > 0);
+
+    if (gameStarted) {
+      move
